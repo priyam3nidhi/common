@@ -251,7 +251,9 @@ def main():
   # Extract the target directory.
   if len(args) == 0:
     #help_exit("Please pass the target directory as a parameter.", parser)
-    target_dir = os.path.join(os.getcwd(),"build")
+    target_dir = os.path.join(os.getcwd(),"../build")
+    #print os.path.normpath(target_dir)
+    #target_dir = os.path.join(target_dir1,"build")
     if not os.path.exists(target_dir):
       os.makedirs(target_dir)
   else:
