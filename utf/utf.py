@@ -287,7 +287,7 @@ def test_module(module_name, module_file_list, security_layers):
 
   # If given an empty test, print an error to avoid confusing output when
   # doing nothing.   https://github.com/SeattleTestbed/common/issues/1
-  if module_file_list == '':
+  if not module_file_list:
     print 'Error: No files to test.'
     return
   
