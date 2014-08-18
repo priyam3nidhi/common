@@ -299,7 +299,7 @@ def main():
   
   # Copy the necessary files to the respective target folders:
 
-  lines = [line.rstrip('\n') for line in open('config_build.txt')]
+  lines = [line.rstrip('\n') for line in open('../scripts/config_build.txt')]
   alist = list(line for line in lines if line)
   length = len(alist)
   count =0
