@@ -247,18 +247,23 @@ def main():
 
   (options, args) = parser.parse_args()
 
-  # Extract the target directory.
+  # Determine the target directory. Use path/to/this/script/../RUNNABLE 
+  # unless overridden by the user.
   if len(args) == 0:
-    target_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),"../RUNNABLE")
+    target_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../RUNNABLE")
+    target_dir = os.path.realpath(target_dir)
     if not os.path.exists(target_dir):
       os.makedirs(target_dir)
+
   else:
-    target_dir = args[0]
-    if not os.path.isdir(target_dir):
-      help_exit("Supplied target is not a directory", parser)
-  # Make sure they gave us a valid directory
-  
-  
+    # The user supplied a target directory. Make it an absolute path, 
+    # and check if it exists.
+    target_dir = os.path.realpath(args[0])
+    
+    if not os.path.ispath(target_dir):
+      help_exit("Supplied target doesn't exist or is not a directory", parser)
+
+
   # Set variables according to the provided options.
   repytest = options.include_tests
   RANDOMPORTS = options.randomports
