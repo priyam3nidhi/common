@@ -294,30 +294,32 @@ def main():
       os.makedirs(dir_name)
 
 
-  # Return to the repo root
+  # Return to the directory containing the dependent repositories, 
+  # i.e. /path/to/component/DEPENDENCIES
   os.chdir(repos_root_dir)
   
-  # Copy the necessary files to the respective target folders:
-  lines = [line.rstrip('\n') for line in open('scripts/config_build.txt')]
-  alist = list(line for line in lines if line)
-  length = len(alist)
-  count =0
-  while(count < length):
-    repo=alist[count]
-    alist0=repo.split(' ', 1)[0]
-    if alist0 != "test" and alist0!= "#":
-      copy_to_target(alist[count], target_dir)
-      count=count + 1
-    elif alist0 != "#" and alist0 == "test" and repytest:
-      repo=alist[count]
-      alist1=repo.split(' ', 1)[1]
-      copy_to_target(alist1, target_dir)
-      count=count + 1
-    else:
-      count=count + 1
+  # Copy the necessary files to the respective target folders, 
+  # following the instructions in scripts/config_build.txt.
+  config_file = open("../scripts/config_build.txt")
+  
+  for line in config_file.readlines():
+    # Ignore comments and blank lines
+    if line.startswith("#") or line.strip() == '':
       continue
-    
-    
+
+    # Anything non-comment and non-empty specifies a 
+    # source directory for us to use.
+    if line.startswith("test"):
+      # Build instructions for unit tests look like this:
+      # "test ../relative/path/to/required/file_or_fileglob
+      source_spec = line.split(" ", 1)[1]
+    else:
+      # This is a non-test instruction
+      source_spec = line
+
+    copy_to_target(source_spec, target_dir)
+  
+  
   # Set working directory to the target
   os.chdir(target_dir)
 
