@@ -296,7 +296,7 @@ def main():
 
   # Return to the grand-parent directory of the dependent repositories, 
   # i.e. /path/to/component/DEPENDENCIES/..
-  os.chdir(os.path.join(repos_root_dir), "..")
+  os.chdir(os.path.join(repos_root_dir, ".."))
   
   # Copy the necessary files to the respective target folders, 
   # following the instructions in scripts/config_build.txt.
