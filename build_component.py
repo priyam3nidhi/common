@@ -264,6 +264,8 @@ def main():
       help_exit("Supplied target '" + target_dir + 
           "' doesn't exist or is not a directory", parser)
 
+  # Print let the world know we run
+  print "Building into", target_dir
 
   # Set variables according to the provided options.
   repytest = options.include_tests
@@ -367,7 +369,7 @@ def main():
   # Change back to root project directory
   os.chdir(repos_root_dir) 
 
-
+  print "Done building!"
 
 if __name__ == '__main__':
   main()
