@@ -41,9 +41,9 @@ import optparse
 import subprocess
 
 
-# import testportfiller from path ../repy_v1/tests
-common_dir=os.path.join(os.path.dirname(os.path.abspath(__file__)),"../DEPENDENCIES/common/" )
-sys.path.insert(0,common_dir)
+# Temporarily add this script's path to the PYTHONPATH so we can 
+# import testportfiller....
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import testportfiller
 # Remove testportfiller's path again
 sys.path = sys.path[1:]
