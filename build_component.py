@@ -321,7 +321,7 @@ def main():
       # Build instructions for unit tests look like this:
       # "test ../relative/path/to/required/file_or_fileglob"
       if repytest:
-        source_spec = line.split(" ", 1)[1]
+        source_spec = line.split(" ", 1)[1].strip()
       else:
         # Tests weren't requested. Skip.
         continue
