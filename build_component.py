@@ -1,5 +1,5 @@
 """
-build_component.py --- build component a of the Seattle Testbed.
+build_component.py --- build a component of the Seattle Testbed.
 
 This script first erases all the files in a target directory, and then 
 copies the necessary files to build the particular component. 
