@@ -44,7 +44,8 @@ import subprocess
 
 
 # import testportfiller from path ../repy_v1/tests
-sys.path.insert(0, os.path.join(os.path.dirname(os.getcwd()), "repy_v1", "tests"))
+common_dir=os.path.join(os.path.dirname(os.path.abspath(__file__)),"../DEPENDENCIES/common/" )
+sys.path.insert(0,common_dir)
 import testportfiller
 # Remove testportfiller's path again
 sys.path = sys.path[1:]
@@ -250,7 +251,7 @@ def main():
 
   # Extract the target directory.
   if len(args) == 0:
-    target_dir = os.path.join(os.getcwd(),"../../RUNNABLE")
+    target_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),"../RUNNABLE")
     if not os.path.exists(target_dir):
       os.makedirs(target_dir)
   else:
@@ -259,7 +260,7 @@ def main():
       help_exit("Supplied target is not a directory", parser)
   # Make sure they gave us a valid directory
   
-
+  
   # Set variables according to the provided options.
   repytest = options.include_tests
   RANDOMPORTS = options.randomports
@@ -268,7 +269,7 @@ def main():
 
 
   # This script's parent directory is the root dir of all repositories
-  repos_root_dir = os.path.dirname(os.getcwd())
+  repos_root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
   # Set working directory to the target
   os.chdir(target_dir)	
@@ -292,11 +293,9 @@ def main():
 
   # Return to the repo root
   os.chdir(repos_root_dir)
-
   
   # Copy the necessary files to the respective target folders:
-
-  lines = [line.rstrip('\n') for line in open('../scripts/config_build.txt')]
+  lines = [line.rstrip('\n') for line in open('scripts/config_build.txt')]
   alist = list(line for line in lines if line)
   length = len(alist)
   count =0
