@@ -246,11 +246,12 @@ def main():
 
   (options, args) = parser.parse_args()
 
-  # Determine the target directory. Use path/to/this/script/../RUNNABLE 
+  # Determine the target directory.
+  # Use path/to/component/DEPENDENCIES/common/../../RUNNABLE 
   # unless overridden by the user.
   if len(args) == 0:
-    target_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../RUNNABLE")
-    target_dir = os.path.realpath(target_dir)
+    component_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    target_dir = os.path.realpath(os.path.join(component_dir, "RUNNABLE"))
     if not os.path.exists(target_dir):
       os.makedirs(target_dir)
 
@@ -260,7 +261,8 @@ def main():
     target_dir = os.path.realpath(args[0])
     
     if not os.path.isdir(target_dir):
-      help_exit("Supplied target doesn't exist or is not a directory", parser)
+      help_exit("Supplied target '" + target_dir + 
+          "' doesn't exist or is not a directory", parser)
 
 
   # Set variables according to the provided options.
@@ -270,7 +272,8 @@ def main():
   copy_checkapi = options.copy_checkapi
 
 
-  # This script's parent directory is the root dir of all repositories
+  # This script's parent directory is the root dir of all dependent 
+  # repositories, path/to/component/DEPENDENCIES/ 
   repos_root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
   # Set working directory to the target
@@ -294,9 +297,13 @@ def main():
 
 
   # Return to the grand-parent directory of the dependent repositories, 
-  # i.e. /path/to/component/DEPENDENCIES/..
+  # i.e. "/path/to/component/DEPENDENCIES/.."
+  # We now have
+  #   "." with the sources of the component we want to build,
+  #   "scripts/" with the build config file, and
+  #   "DEPENDENCIES/" with all the dependent repos.
   os.chdir(os.path.join(repos_root_dir, ".."))
-  
+
   # Copy the necessary files to the respective target folders, 
   # following the instructions in scripts/config_build.txt.
   config_file = open("scripts/config_build.txt")
@@ -307,14 +314,18 @@ def main():
       continue
 
     # Anything non-comment and non-empty specifies a 
-    # source directory for us to use.
+    # source file or directory for us to use.
     if line.startswith("test"):
       # Build instructions for unit tests look like this:
-      # "test ../relative/path/to/required/file_or_fileglob
-      source_spec = line.split(" ", 1)[1]
+      # "test ../relative/path/to/required/file_or_fileglob"
+      if repytest:
+        source_spec = line.split(" ", 1)[1]
+      else:
+        # Tests weren't requested. Skip.
+        continue
     else:
-      # This is a non-test instruction
-      source_spec = line
+      # This is a non-test instruction.
+      source_spec = line.strip()
 
     copy_to_target(source_spec, target_dir)
   
