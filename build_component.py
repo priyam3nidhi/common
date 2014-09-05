@@ -7,8 +7,7 @@ Afterwards, .mix files in the target directory are ran through the
 preprocessor.  
 
 The target directory that is passed to the script must exist. It is 
-emptied before files are copied over.
-
+emptied before files are copied over...
 This script assumes that you (or a component's scripts/initialize.py) have 
 checked out all the required repos of SeattleTestbed into the parent directory 
 of this script. 
@@ -300,7 +299,7 @@ def main():
   
   # Copy the necessary files to the respective target folders, 
   # following the instructions in scripts/config_build.txt.
-  config_file = open("../scripts/config_build.txt")
+  config_file = open("scripts/config_build.txt")
   
   for line in config_file.readlines():
     # Ignore comments and blank lines
