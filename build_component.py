@@ -260,7 +260,7 @@ def main():
     # and check if it exists.
     target_dir = os.path.realpath(args[0])
     
-    if not os.path.ispath(target_dir):
+    if not os.path.isdir(target_dir):
       help_exit("Supplied target doesn't exist or is not a directory", parser)
 
 
