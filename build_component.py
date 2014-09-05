@@ -28,15 +28,8 @@ NOTE WELL: The repositories are used as-is. No attempt is made to switch
     -r or --randomports replaces the default ports of 12345, 12346, and 12347
           with three random ports between 52000 and 53000. 
 
-<Example>
-  Put the Repy runtime and unit test files into a temporary dir, 
-  and run the unit tests for module "repyv2api" there.
-    user@vm:repy_v2$ mkdir /tmp/test
-    user@vm:repy_v2$ cd DEPENDENCIES/common
-    user@vm:common$ python preparetest.py -t /tmp/test
-    user@vm:dist$ cd /tmp/test
-    user@vm:test$ python utf.py -m repyv2api
-
+  For details on the build process of Seattle components, 
+  see https://seattle.poly.edu/wiki/BuildInstructions
 """
 
 import os
