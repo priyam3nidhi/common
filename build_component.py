@@ -1,12 +1,17 @@
 """
+build_component.py --- build component a of the Seattle Testbed.
+
 This script first erases all the files in a target directory, and then 
-copies the necessary files to build the particular component. Afterwards, the .mix 
-files in the target directory are ran through the preprocessor.  
+copies the necessary files to build the particular component. 
+Afterwards, .mix files in the target directory are ran through the 
+preprocessor.  
+
 The target directory that is passed to the script must exist. It is 
 emptied before files are copied over.
 
-It is assumed that you have checked out all the required repos of 
-SeattleTestbed into the parent directory of this script.
+This script assumes that you (or a component's scripts/initialize.py) have 
+checked out all the required repos of SeattleTestbed into the parent directory 
+of this script. 
 
 NOTE WELL: The repositories are used as-is. No attempt is made to switch 
     to a specific branch, pull from remotes, etc.
@@ -18,17 +23,17 @@ NOTE WELL: The repositories are used as-is. No attempt is made to switch
 
     -t or --testfiles copies in all the files required to run the unit tests
     -v or --verbose displays significantly more output on failure to process 
-                    a mix file
+          a mix file
     -c or --checkapi copies the checkapi source files
     -r or --randomports replaces the default ports of 12345, 12346, and 12347
-                        with three random ports between 52000 and 53000. 
+          with three random ports between 52000 and 53000. 
 
 <Example>
   Put the Repy runtime and unit test files into a temporary dir, 
   and run the unit tests for module "repyv2api" there.
-    user@vm:seattle$ cd dist
-    user@vm:dist$ mkdir /tmp/test
-    user@vm:dist$ python preparetest.py -t /tmp/test
+    user@vm:repy_v2$ mkdir /tmp/test
+    user@vm:repy_v2$ cd DEPENDENCIES/common
+    user@vm:common$ python preparetest.py -t /tmp/test
     user@vm:dist$ cd /tmp/test
     user@vm:test$ python utf.py -m repyv2api
 
