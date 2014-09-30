@@ -1,0 +1,10 @@
+common/*
+common/utf/*
+repy_v2/*
+# Tests
+test ../tests/*
+# Trees
+tree ../tree/*
+# Subdir
+seattlelib_v2/* subdir_seattlelib_v2/v2/*
+test repy_v2/* subdir_repy_v2/v2/*
