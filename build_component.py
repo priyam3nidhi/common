@@ -308,7 +308,7 @@ def main():
 
   # Copy the necessary files to the respective target folders, 
   # following the instructions in scripts/config_build.txt.
-  config_file = open("scripts/config_build.txt")
+  config_file = open(os.path.expanduser("~/Seattle/common-master/scripts/config_build.txt"))
 
   
   for line in config_file.readlines():
@@ -317,9 +317,9 @@ def main():
       continue
 
 	# If there are subdirectories, handle them
-	if line.split(" ")[-1].startswith("subdir_"):
-		source_spec = line.split(" ")[-1].strip()[len("subdir_"):]
-		copy_tree_to_target(source_spec, target_dir)
+      if line.split(" ")[-1].startswith("subdir_"):
+	source_spec = line.split(" ")[-1].strip()[len("subdir_"):]
+	copy_tree_to_target(source_spec, target_dir)
 		
     # Anything non-comment and non-empty specifies a 
     # source file or directory for us to use.
@@ -342,8 +342,8 @@ def main():
       source_spec = line.strip()
 
 	# Dont copy to target if tree is already at target
-	if line.starts_with("tree"):
-		continue
+      if line.startswith("tree"):
+	continue
 
 	copy_to_target(source_spec, target_dir)
   
