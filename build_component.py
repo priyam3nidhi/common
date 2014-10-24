@@ -18,7 +18,7 @@ NOTE WELL: The repositories are used as-is. No attempt is made to switch
     for each repo will be displayed as a visual reminder of this fact.)
 
 <Usage>
-  build.py  [-t] [-v] [-c] [-r] <target_directory>
+  build.py  [-t] [-v] [-c] [-r] [-a]<target_directory>
 
     -t or --testfiles copies in all the files required to run the unit tests
     -v or --verbose displays significantly more output on failure to process 
@@ -26,6 +26,7 @@ NOTE WELL: The repositories are used as-is. No attempt is made to switch
     -c or --checkapi copies the checkapi source files
     -r or --randomports replaces the default ports of 12345, 12346, and 12347
           with three random ports between 52000 and 53000. 
+    -a or --trees copies over file trees to the target dir
 
   For details on the build process of Seattle components, 
   see https://seattle.poly.edu/wiki/BuildInstructions
@@ -228,9 +229,12 @@ def help_exit(errMsg, parser):
 
 def main():
   # Parse the options provided. 
-  helpstring = "python preparetest.py [-t] [-v] [-c] [-r] <target>"
+  helpstring = "python preparetest.py [-t] [-v] [-c] [-r] [-a] <target>"
   parser = optparse.OptionParser(usage=helpstring)
-
+  # add a option about copying over file trees to the target dir
+  parser.add_option("-a", "--trees", action="store_true",
+      dest="copy_trees", default=False,
+      help="Copy over file trees to the target dir ")
   parser.add_option("-t", "--testfiles", action="store_true",
       dest="include_tests", default=False,
       help="Include files required to run the unit tests ")
@@ -268,6 +272,7 @@ def main():
   print "Building into", target_dir
 
   # Set variables according to the provided options.
+  copytree = options.copy_trees
   repytest = options.include_tests
   RANDOMPORTS = options.randomports
   verbose = options.verbose
@@ -276,7 +281,7 @@ def main():
 
   # This script's parent directory is the root dir of all dependent 
   # repositories, path/to/component/DEPENDENCIES/ 
-  repos_root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+  repos_root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
   # Set working directory to the target
   os.chdir(target_dir)	
@@ -304,49 +309,59 @@ def main():
   #   "." with the sources of the component we want to build,
   #   "scripts/" with the build config file, and
   #   "DEPENDENCIES/" with all the dependent repos.
-  os.chdir(os.path.join(repos_root_dir, ".."))
-
+  #os.chdir(os.path.join(repos_root_dir, ".."))
+  os.chdir(repos_root_dir)
   # Copy the necessary files to the respective target folders, 
   # following the instructions in scripts/config_build.txt.
-  config_file = open(os.path.expanduser("~/Seattle/common-master/scripts/config_build.txt"))
-
+  config_file = open("scripts/config_build.txt")
   
   for line in config_file.readlines():
     # Ignore comments and blank lines
     if line.startswith("#") or line.strip() == '':
       continue
 
-	# If there are subdirectories, handle them
-      if line.split(" ")[-1].startswith("subdir_"):
-	source_spec = line.split(" ")[-1].strip()[len("subdir_"):]
-	copy_tree_to_target(source_spec, target_dir)
-		
     # Anything non-comment and non-empty specifies a 
     # source file or directory for us to use.
     if line.startswith("test"):
       # Build instructions for unit tests look like this:
       # "test ../relative/path/to/required/file_or_fileglob"
       if repytest:
-        source_spec = line.split(" ", 1)[1].strip()
+        source_spec = line.split()[1]
+        try:
+          sub_target_dir = line.split()[2]
+        except IndexError:
+          sub_target_dir = ''
       else:
         # Tests weren't requested. Skip.
         continue
-	if line.startswith("tree"):
-		# PN:What to do if we have a tree
-		# "tree ../sample/dir/names
-		source_spec = line.split(" ", 1)[1].strip()
-		
-		copy_tree_to_target(source_spec, target_dir)
+    elif line.startswith("tree"):
+      if copytree:
+        source_spec = line.split()[1]
+        try:
+          sub_target_dir = line.split()[2]
+        except IndexError:
+          sub_target_dir = ''
+      else:
+        # Trees weren't requested. Skip.
+        continue
     else:
       # This is a non-test instruction.
-      source_spec = line.strip()
-
-	# Dont copy to target if tree is already at target
-      if line.startswith("tree"):
-	continue
-
-	copy_to_target(source_spec, target_dir)
-  
+      source_spec = line.split()[0]
+      try:
+         sub_target_dir =  line.split()[1]
+      except IndexError:
+         sub_target_dir = ''
+    
+    os.chdir(target_dir)
+    if not os.path.exists(sub_target_dir) and sub_target_dir:
+      os.makedirs(sub_target_dir)
+    
+    os.chdir(repos_root_dir)
+    if copytree:
+      copy_tree_to_target(source_spec, target_dir + '/' + sub_target_dir)   
+    else:
+      copy_to_target(source_spec, target_dir + '/' + sub_target_dir)
+ 
   
   # Set working directory to the target
   os.chdir(target_dir)
