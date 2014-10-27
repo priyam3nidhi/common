@@ -1,0 +1,8 @@
+# SeattleTestbed/common isn't really a standalone component, 
+# it's part of the build harness for the other repos. Therefore, 
+# there are no non-`test` directives.
+#
+# It is unit-testable however, and here is what we need for this:
+test ./*
+test DEPENDENCIES/utf/*
+test tests/*

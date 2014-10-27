@@ -1,0 +1,32 @@
+# The SeattleTestbed `common` repository has two dependencies so that 
+# it can be built for unit testing: `utf`, and `common` itself.
+# (You can't really build a standalone runnable component out of it, 
+# see the comments in config_build.txt in this directory).
+#
+# We check out a fresh copy of `common` into the `DEPENDENCIES` subdir 
+# for building so that we don't have to fiddle with import paths in 
+# SeattleTestbed/buildscripts/build.py for just this specific repo.
+# 
+# The copy of `common` checked out is only used during building the 
+# unit tests --- the code tested later is taken from this config file's 
+# parent directory, i.e. usually your working copy.
+#
+# Sketch of dir tree after running `scripts/initialize.py`:
+#
+# you_working_copy_of_common/
+#          LICENSE
+#          build_component.py   <---   We want to unit-test this version
+#          restrictions.default
+#          (...)
+#          DEPENDENCIES/  <---  initialize.py downloads stuff into here
+#          DEPENDENCIES/utf/ ...  <--- Seattle Unit Test Framework files
+#          DEPENDENCIES/common/ ... <--- Copy of `common` used for building
+#          scripts/build.py
+#          scripts/config_build.txt
+#          scripts/config_initialize.txt   <---   the file you are looking at,
+#                                 telling initialize.py what to download where
+#          scripts/initialize.py
+
+https://github.com/SeattleTestbed/common ../DEPENDENCIES/common
+https://github.com/SeattleTestbed/utf ../DEPENDENCIES/utf
+
