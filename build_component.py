@@ -358,9 +358,9 @@ def main():
     
     os.chdir(repos_root_dir)
     if copytree:
-      copy_tree_to_target(source_spec, target_dir + '/' + sub_target_dir)   
+      copy_tree_to_target(source_spec, target_dir + os.path.sep + sub_target_dir)   
     else:
-      copy_to_target(source_spec, target_dir + '/' + sub_target_dir)
+      copy_to_target(source_spec, target_dir + os.path.sep + sub_target_dir)
  
   
   # Set working directory to the target
