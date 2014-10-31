@@ -64,7 +64,7 @@ def copy_to_target(file_expr, target):
 
   for file_path in files_to_copy:
     if os.path.isfile(file_path):
-      shutil.copyfile(file_path, target + "/" +os.path.basename(file_path))
+      shutil.copyfile(file_path, target + os.path.sep +os.path.basename(file_path))
 
 
 
@@ -343,7 +343,7 @@ def main():
       os.makedirs(sub_target_dir)
     
     os.chdir(repos_root_dir)
-    copy_to_target(source_spec, target_dir + '/' + sub_target_dir)
+    copy_to_target(source_spec, target_dir + os.path.sep + sub_target_dir)
  
   
   # Set working directory to the target
