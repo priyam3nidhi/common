@@ -1,33 +1,27 @@
-  """
+"""
 build_component.py --- build a component of the Seattle Testbed.
-
 This script first erases all the files in a target directory, and then 
 copies the necessary files to build the particular component. 
 Afterwards, .mix files in the target directory are ran through the 
 preprocessor.  
-
 The target directory that is passed to the script must exist. It is 
 emptied before files are copied over...
 This script assumes that you (or a component's scripts/initialize.py) have 
 checked out all the required repos of SeattleTestbed into the parent directory 
 of this script. 
-
 NOTE WELL: The repositories are used as-is. No attempt is made to switch 
     to a specific branch, pull from remotes, etc.
     (In a future version of this script, the currently active branch 
     for each repo will be displayed as a visual reminder of this fact.)
-
 <Usage>
-  build.py  [-t] [-v] [-c] [-r] [-a]<target_directory>
-
+  build.py  [-t] [-v] [-c] [-r] [-a] <target_directory>
+    -a or --trees copies over file trees to the target dir
     -t or --testfiles copies in all the files required to run the unit tests
     -v or --verbose displays significantly more output on failure to process 
           a mix file
     -c or --checkapi copies the checkapi source files
     -r or --randomports replaces the default ports of 12345, 12346, and 12347
           with three random ports between 52000 and 53000. 
-    -a or --trees copies over file trees to the target dir
-
   For details on the build process of Seattle components, 
   see https://seattle.poly.edu/wiki/BuildInstructions
 """
@@ -71,7 +65,6 @@ def copy_to_target(file_expr, target):
 def copy_tree_to_target(source, target, ignore=None):
   """
   Copies a directory to the target destination.
-
   If you pass a string for ignore, then subdirectories that contain the ignore
   string will not be copied over (as well as the files they contain).
   """
@@ -179,23 +172,18 @@ def replace_string(old_string, new_string, file_name_pattern="*"):
     Go through all the files in the current folder and replace
     every match of the old string in the file with the new
     string.
-
   <Arguments>
     old_string - The string we want to replace.
  
     new_string - The new string we want to replace the old string
       with.
-
     file_name_pattern - The pattern of the file name if you want
       to reduce the number of files we look at. By default the 
       function looks at all files.
-
   <Exceptions>
     None.
-
   <Side Effects>
     Many files may get modified.
-
   <Return>
     None
   """
@@ -229,9 +217,9 @@ def help_exit(errMsg, parser):
 
 def main():
   # Parse the options provided. 
-  helpstring = "python preparetest.py [-t] [-v] [-c] [-r] [-a] <target>"
+  helpstring = "python preparetest.py [-t] [-v] [-c] [-r] [-a]<target>"
   parser = optparse.OptionParser(usage=helpstring)
-  # add a option about copying over file trees to the target dir
+  
   parser.add_option("-a", "--trees", action="store_true",
       dest="copy_trees", default=False,
       help="Copy over file trees to the target dir ")
@@ -281,8 +269,7 @@ def main():
 
   # This script's parent directory is the root dir of all dependent 
   # repositories, path/to/component/DEPENDENCIES/ 
-  repos_root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+  repos_root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
   # Set working directory to the target
   os.chdir(target_dir)	
   files_to_remove = glob.glob("*")
@@ -309,17 +296,12 @@ def main():
   #   "." with the sources of the component we want to build,
   #   "scripts/" with the build config file, and
   #   "DEPENDENCIES/" with all the dependent repos.
-  #os.chdir(os.path.join(repos_root_dir, ".."))
-  os.chdir(repos_root_dir)
+  os.chdir(os.path.join(repos_root_dir, ".."))
+
   # Copy the necessary files to the respective target folders, 
   # following the instructions in scripts/config_build.txt.
-  try:
-     config_file = open("scripts/config_build.txt")
-  except IOError:
-     os.chdir(os.path.realpath(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "RUNNABLE")))  
-     os.makedirs("repyv1")
-     os.makedirs("repyv2")
-     sys.exit()
+  config_file = open("scripts/config_build.txt")
+  
   for line in config_file.readlines():
     # Ignore comments and blank lines
     if line.startswith("#") or line.strip() == '':
@@ -331,42 +313,25 @@ def main():
       # Build instructions for unit tests look like this:
       # "test ../relative/path/to/required/file_or_fileglob"
       if repytest:
-        source_spec = line.split()[1]
-        try:
-          sub_target_dir = line.split()[2]
-        except IndexError:
-          sub_target_dir = ''
+        source_spec = line.split(" ", 1)[1].strip()
       else:
         # Tests weren't requested. Skip.
         continue
-    elif line.startswith("tree"):
-      if copytree:
-        source_spec = line.split()[1]
-        try:
-          sub_target_dir = line.split()[2]
-        except IndexError:
-          sub_target_dir = ''
-      else:
-        # Trees weren't requested. Skip.
-        continue
     else:
       # This is a non-test instruction.
-      source_spec = line.split()[0]
-      try:
-         sub_target_dir =  line.split()[1]
-      except IndexError:
-         sub_target_dir = ''
-    
-    os.chdir(target_dir)
-    if not os.path.exists(sub_target_dir) and sub_target_dir:
-      os.makedirs(sub_target_dir)
-    
-    os.chdir(repos_root_dir)
-    if copytree:
-      copy_tree_to_target(source_spec, target_dir + os.path.sep + sub_target_dir)   
+      source_spec = line.strip()
+
+    if line.startswith("tree"):
+     
+      if copytree:
+        source_spec = line.split(" ", 1)[1].strip()
+      else:
+        continue
     else:
-      copy_to_target(source_spec, target_dir + os.path.sep + sub_target_dir)
- 
+      source_spec = line.strip()
+
+    copy_to_target(source_spec, target_dir)
+  
   
   # Set working directory to the target
   os.chdir(target_dir)
