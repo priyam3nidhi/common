@@ -1,5 +1,10 @@
-common/*
-common/utf/*
-repy_v2/*
-# Tests
-test ../tests/*
+# This one would be for building a component
+DEPENDENCIES/common/* subdirs_common
+DEPENDENCIES/common/utf/* subdirs_common_utf
+DEPENDENCIES/repy_v2/* subdirs_repy_v2
+
+# And that's the syntax for preparing tests
+test tests/* subdir_tests
+
+# This one would be for copying over file trees 
+tree DEPENDENCIES/repy_v2/ subdir_for_repy_v2
