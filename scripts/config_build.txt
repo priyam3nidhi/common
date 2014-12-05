@@ -3,6 +3,15 @@
 # there are no non-`test` directives.
 #
 # It is unit-testable however, and here is what we need for this:
-test ./*
+test ./
 test DEPENDENCIES/utf/*
-test tests/*
+test DEPENDENCIES/utf/tests/*
+DEPENDENCIES/common/* test1 
+DEPENDENCIES/common/utf/* test2
+DEPENDENCIES/repy_v2/* test3
+
+# Tests
+test DEPENDENCIES/utf/tests/*
+# Subdir
+DEPENDENCIES/seattlelib_v2/* subdir_seattlelib_v2/v2/
+test DEPENDENCIES/repy_v2/* subdir_repy_v2/v2/
