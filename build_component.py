@@ -1,32 +1,27 @@
 """
 build_component.py --- build a component of the Seattle Testbed.
-
 This script first erases all the files in a target directory, and then 
 copies the necessary files to build the particular component. 
 Afterwards, .mix files in the target directory are ran through the 
 preprocessor.  
-
 The target directory that is passed to the script must exist. It is 
 emptied before files are copied over...
 This script assumes that you (or a component's scripts/initialize.py) have 
 checked out all the required repos of SeattleTestbed into the parent directory 
 of this script. 
-
 NOTE WELL: The repositories are used as-is. No attempt is made to switch 
     to a specific branch, pull from remotes, etc.
     (In a future version of this script, the currently active branch 
     for each repo will be displayed as a visual reminder of this fact.)
-
 <Usage>
   build.py  [-t] [-v] [-c] [-r] <target_directory>
-
     -t or --testfiles copies in all the files required to run the unit tests
     -v or --verbose displays significantly more output on failure to process 
           a mix file
     -c or --checkapi copies the checkapi source files
     -r or --randomports replaces the default ports of 12345, 12346, and 12347
           with three random ports between 52000 and 53000. 
-
+    
   For details on the build process of Seattle components, 
   see https://seattle.poly.edu/wiki/BuildInstructions
 """
@@ -63,14 +58,13 @@ def copy_to_target(file_expr, target):
 
   for file_path in files_to_copy:
     if os.path.isfile(file_path):
-      shutil.copyfile(file_path, target + "/" +os.path.basename(file_path))
+      shutil.copyfile(file_path, target + os.path.sep +os.path.basename(file_path))
 
 
 
 def copy_tree_to_target(source, target, ignore=None):
   """
   Copies a directory to the target destination.
-
   If you pass a string for ignore, then subdirectories that contain the ignore
   string will not be copied over (as well as the files they contain).
   """
@@ -178,23 +172,18 @@ def replace_string(old_string, new_string, file_name_pattern="*"):
     Go through all the files in the current folder and replace
     every match of the old string in the file with the new
     string.
-
   <Arguments>
     old_string - The string we want to replace.
  
     new_string - The new string we want to replace the old string
       with.
-
     file_name_pattern - The pattern of the file name if you want
       to reduce the number of files we look at. By default the 
       function looks at all files.
-
   <Exceptions>
     None.
-
   <Side Effects>
     Many files may get modified.
-
   <Return>
     None
   """
@@ -230,7 +219,7 @@ def main():
   # Parse the options provided. 
   helpstring = "python preparetest.py [-t] [-v] [-c] [-r] <target>"
   parser = optparse.OptionParser(usage=helpstring)
-
+  # add a option about copying over file trees to the target dir
   parser.add_option("-t", "--testfiles", action="store_true",
       dest="include_tests", default=False,
       help="Include files required to run the unit tests ")
@@ -279,7 +268,7 @@ def main():
   repos_root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
   # Set working directory to the target
-  os.chdir(target_dir)	
+  os.chdir(target_dir)  
   files_to_remove = glob.glob("*")
 
   # Empty the destination
@@ -305,7 +294,6 @@ def main():
   #   "scripts/" with the build config file, and
   #   "DEPENDENCIES/" with all the dependent repos.
   os.chdir(os.path.join(repos_root_dir, ".."))
-
   # Copy the necessary files to the respective target folders, 
   # following the instructions in scripts/config_build.txt.
   config_file = open("scripts/config_build.txt")
@@ -321,16 +309,29 @@ def main():
       # Build instructions for unit tests look like this:
       # "test ../relative/path/to/required/file_or_fileglob"
       if repytest:
-        source_spec = line.split(" ", 1)[1].strip()
+        source_spec = line.split()[1].strip()
+        try:
+          sub_target_dir = line.split()[2].strip()
+        except IndexError:
+          sub_target_dir = ''
       else:
         # Tests weren't requested. Skip.
         continue
     else:
       # This is a non-test instruction.
-      source_spec = line.strip()
-
-    copy_to_target(source_spec, target_dir)
-  
+      source_spec = line.split()[0].strip()
+      try:
+         sub_target_dir =  line.split()[1].strip()
+      except IndexError:
+         sub_target_dir = ''
+    
+    os.chdir(target_dir)
+    if not os.path.exists(sub_target_dir) and sub_target_dir:
+      os.makedirs(sub_target_dir)
+    
+    os.chdir(os.path.join(repos_root_dir, ".."))
+    copy_to_target(source_spec, target_dir + os.path.sep + sub_target_dir)
+ 
   
   # Set working directory to the target
   os.chdir(target_dir)
