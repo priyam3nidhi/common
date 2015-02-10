@@ -102,7 +102,7 @@ def replace_ports(foundMessports, foundConnports):
 def main():
   # If running separately, just put back in the values that were previously
   # hardcoded.
-  replace_ports(['12345', '12346', '12347'], ['12345', '12346', '12347'])
+  replace_ports(['12345', '12346', '12347'], ['12345', '12346', '12347', '12348'])
   
 if __name__ == '__main__':
   main()
